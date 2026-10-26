@@ -1,6 +1,6 @@
 # Hand Gesture Music Player: Student Guide
 
-**Computer Vision Club, BITS Goa | Week 4 Project**
+**Electronics and Robotics Club, BITS Goa | Computer Vision | Week 4 Project**
 
 Wave your hands at the webcam and make music. Hold up some fingers, and your program counts them and plays a drum sound that matches the number.
 
