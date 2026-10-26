@@ -4,7 +4,7 @@
 
 Wave your hands at the webcam and make music. Hold up some fingers, and your program counts them and plays a drum sound that matches the number.
 
-This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`Week4_Notes_CV.pdf`) alongside it, especially Chapters 2 to 6.
+This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`CV_Week4_Notes.pdf`) alongside it, especially Chapters 2 to 6.
 
 ---
 
