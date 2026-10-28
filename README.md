@@ -1,10 +1,14 @@
-# Hand Gesture Music Player: Student Guide
+# Hand Gesture Swara Player: Student Guide
 
-**Electronics and Robotics Club, BITS Goa | Computer Vision | Week 4 Project**
+**Computer Vision Club, BITS Goa | Week 4 Project**
 
-Wave your hands at the webcam and make music. Hold up some fingers, and your program counts them and plays a drum sound that matches the number.
+Wave your hands at the webcam and make music. Hold up some fingers, and your program counts them and plays the matching **swara** (Sa Re Ga Ma Pa Dha Ni Sa).
 
-This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`CV_Week4_Notes.pdf`) alongside it, especially Chapters 2 to 6.
+This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`Week4_Notes_CV.pdf`) alongside it, especially Chapters 2 to 6.
+
+---
+
+Note:- If you open this file in VSCode, press Ctrl+Shift+V for readible interface.
 
 ---
 
@@ -18,13 +22,21 @@ Webcam frame ──► Detect hand landmarks ──► Count raised fingers ─�
 | Fingers shown (both hands total) | Result |
 |---|---|
 | 0 | Silence |
-| 1 to 10 | A different sound for each number |
+| 1 | Sa |
+| 2 | Re |
+| 3 | Ga |
+| 4 | Ma |
+| 5 | Pa |
+| 6 | Dha |
+| 7 | Ni |
+| 8 | Sa (upper octave) |
+| 9 to 10 | Silence (no sound assigned) |
 
 Your finished program should:
 
 - Show a mirrored live webcam window with the hand skeleton drawn on it
 - Display the current finger count on screen
-- Play the matching sound when a gesture is shown
+- Play the matching swara when a gesture is shown, and show its name on screen
 - Quit cleanly when you press **q**
 
 ---
@@ -33,10 +45,22 @@ Your finished program should:
 
 ### Requirements
 
-- Python 3.x
-- OpenCV (`opencv-python`)
+- Python 3.10
+- OpenCV (`opencv-python`) 
 - MediaPipe (`mediapipe`)
 - Pygame (`pygame`)
+
+python 3.10.11
+
+mediapipe==0.10.14
+
+opencv-python==5.0.0.93
+
+pygame==2.6.1
+
+numpy==2.2.6
+
+
 
 ```bash
 pip install opencv-python mediapipe pygame
@@ -48,15 +72,22 @@ pip install opencv-python mediapipe pygame
 hand-gesture-music-player/
 ├── main.py          # your code
 ├── README.md        # this guide
-└── sounds/          # your audio files
-    ├── ...
+└── sounds_swaras/   # the 8 swara audio files
+    ├── 1_Sa.mp3
+    ├── 2_Re.mp3
+    ├── 3_Ga.mp3
+    ├── 4_Ma.mp3
+    ├── 5_Pa.mp3
+    ├── 6_Dha.mp3
+    ├── 7_Ni.mp3
+    └── 8_Sa_upper.mp3
 ```
 
 ### Get your sounds
 
-You need **10 short audio clips** (`.mp3` or `.wav`), one per finger count. Drum and percussion hits work best because they are short and punchy. Examples: kick, snare, crash, hi-hat, three toms, cymbal, bongo, guiro.
+You are given **8 short audio clips** (`.mp3`), one for each swara: Sa, Re, Ga, Ma, Pa, Dha, Ni and the upper Sa. Each clip is about 1.5 seconds long. Put them all in a folder called `sounds_swaras/`.
 
-Free sound packs are easy to find online. Keep file names simple, and avoid spaces if you can.
+The file names start with the finger count they belong to (`1_Sa.mp3` for 1 finger, `2_Re.mp3` for 2 fingers, and so on). Keep the names exactly as they are, because your dictionary in Milestone 6 must match them.
 
 > **Tip:** Check that each file plays in a normal media player before blaming your code.
 
@@ -231,14 +262,14 @@ draw the count on the frame with cv2.putText
 
 ```python
 sounds_mapping = {
-    1: "sounds/your-first-sound.mp3",
-    # ... up to 10
+    1: "sounds_swaras/1_Sa.mp3",
+    # ... up to 8
 }
 ```
 
-Then a simple lookup: `if count in sounds_mapping:`. Count 0 is simply not in the dictionary, so no sound plays.
+Then a simple lookup: `if count in sounds_mapping:`. Count 0, 9 and 10 are simply not in the dictionary, so no sound plays for them.
 
-**Design question:** Which sounds should go on which numbers? Think about what feels natural. For example, a strong kick on a single finger and a crash on a full open hand.
+**Design question:** The swaras go in order, so 1 finger is Sa and 8 fingers is the upper Sa. Why does this ordering feel natural? What happens as you raise your fingers one by one from a fist to an open hand? (Hint: your count passes through 1, 2, 3 and 4 on the way to 5. Think about whether each of those should play a note.)
 
 ---
 
@@ -249,7 +280,7 @@ Then a simple lookup: `if count in sounds_mapping:`. Count 0 is simply not in th
 ```python
 import pygame, time
 pygame.mixer.init()                        # once, at the top
-pygame.mixer.music.load("sounds/your-file.mp3")
+pygame.mixer.music.load("sounds_swaras/1_Sa.mp3")
 pygame.mixer.music.play()
 time.sleep(2)                              # keep the script alive long enough to hear it
 ```
@@ -260,11 +291,13 @@ Once that works, call it from your gesture lookup.
 
 #### The trigger problem
 
+Swara notes are about 1.5 seconds long, so they need to **ring out**. Do not call `.stop()` right after `.play()`, or you will only hear a tiny click.
+
 The loop runs about 30 times per second. If you call `play()` every frame while a gesture is held, the sound restarts constantly and you hear stuttering noise. Decide how to handle this. Three common approaches:
 
 | Approach | Idea | Trade-off |
 |---|---|---|
-| **Short delay** | Pause briefly after playing | Simple, but a blocking delay **freezes the video** |
+| **Short delay** | Pause briefly after playing | Simple, but a blocking delay **freezes the video**, and a delay shorter than the note cuts it off |
 | **Cooldown timer** | Only play if enough time has passed since the last sound (`time.time()`) | Does not block; needs one extra variable |
 | **Trigger on change** | Only play when the count *differs* from the previous frame | Feels like a real "hit"; you must store `previous_count` |
 
@@ -314,6 +347,8 @@ cleanup: release camera, destroy windows, close landmarker
 | No sound at all | Wrong file path, or `mixer.init()` missing | Run the standalone audio test from Milestone 7 |
 | `FileNotFoundError` for a sound | Path is relative to where you *run* the script | Run from the project folder, or check spelling and extension |
 | Sound stutters or repeats | Calling `play()` every frame | Add a trigger rule (see Milestone 7) |
+| Note is cut off after a split second | `stop()` or a short delay right after `play()` | Let the note ring out; use trigger-on-change instead |
+| Wrong notes play while raising fingers | The count passes through lower numbers on the way up | Only trigger once the count has stayed the same for a few frames |
 | Video freezes briefly on each sound | A blocking delay in the loop | Switch to a cooldown timer or trigger-on-change |
 
 **General debugging habits**
@@ -334,6 +369,8 @@ Finished early? Try one of these:
 - Add a key (for example `m`) to mute and unmute
 - Make the count more stable by requiring the same value for several frames before triggering
 - Detect a different gesture (fist, thumbs-up) and map it to **stop all sounds**
+- Give 9 and 10 fingers their own sounds (for example, higher-octave notes) by adding more clips
+- Show the swara name large on screen when it plays, and highlight it for a moment
 
 ---
 
@@ -342,10 +379,10 @@ Finished early? Try one of these:
 - [ ] Program runs with `python main.py` from a clean terminal
 - [ ] Webcam feed is mirrored and the skeleton is drawn on all detected hands
 - [ ] Finger count is displayed and correct for 0 to 10
-- [ ] Each count from 1 to 10 plays a different sound
+- [ ] Each count from 1 to 8 plays the correct swara (1 = Sa ... 8 = upper Sa), and 9 and 10 stay silent
 - [ ] Sounds do not stutter or freeze the video
 - [ ] Pressing `q` closes everything cleanly (camera released, windows closed, landmarker closed)
-- [ ] `sounds/` folder and file paths work on another machine
+- [ ] `sounds_swaras/` folder and file paths work on another machine
 - [ ] Code is commented where the logic is not obvious
 
 ---
