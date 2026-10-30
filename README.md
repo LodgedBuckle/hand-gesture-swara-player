@@ -1,10 +1,13 @@
 # Hand Gesture Swara Player: Student Guide
 
+A simple completed version is in `main.py`. See [HOW_TO_RUN.md](HOW_TO_RUN.md) to run it, or read the [detailed beginner code guide](docs/Swara-Player-Beginner-Code-Guide.pdf).
+
+
 **Computer Vision Club, BITS Goa | Week 4 Project**
 
 Wave your hands at the webcam and make music. Hold up some fingers, and your program counts them and plays the matching **swara** (Sa Re Ga Ma Pa Dha Ni Sa).
 
-This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`Week4_Notes_CV.pdf`) alongside it, especially Chapters 2 to 6.
+This guide walks you through **what to build, why each step is needed, and how to debug it**. It deliberately does *not* contain the finished code. The snippets are small hints, not a solution. Use the Week 4 notes (`CV_Week4_Notes.pdf`) alongside it, especially Chapters 2 to 6.
 
 ---
 
@@ -15,7 +18,7 @@ Note:- If you open this file in VSCode, press Ctrl+Shift+V for readible interfac
 ## 1. What You Will Build
 
 ```
-Webcam frame ──► Detect hand landmarks ──► Count raised fingers ──► Look up a sound ──► Play it
+Webcam frame â”€â”€â–º Detect hand landmarks â”€â”€â–º Count raised fingers â”€â”€â–º Look up a sound â”€â”€â–º Play it
                       (MediaPipe)               (your logic)          (dictionary)       (Pygame)
 ```
 
@@ -54,33 +57,33 @@ python 3.10.11
 
 mediapipe==0.10.14
 
-opencv-python==5.0.0.93
+opencv-contrib-python==4.11.0.86
 
 pygame==2.6.1
 
-numpy==2.2.6
+numpy==1.26.4
 
 
 
 ```bash
-pip install opencv-python mediapipe pygame
+python -m pip install -r requirements.txt
 ```
 
 ### Suggested folder layout
 
 ```
 hand-gesture-music-player/
-├── main.py          # your code
-├── README.md        # this guide
-└── sounds_swaras/   # the 8 swara audio files
-    ├── 1_Sa.mp3
-    ├── 2_Re.mp3
-    ├── 3_Ga.mp3
-    ├── 4_Ma.mp3
-    ├── 5_Pa.mp3
-    ├── 6_Dha.mp3
-    ├── 7_Ni.mp3
-    └── 8_Sa_upper.mp3
+â”œâ”€â”€ main.py          # your code
+â”œâ”€â”€ README.md        # this guide
+â””â”€â”€ sounds_swaras/   # the 8 swara audio files
+    â”œâ”€â”€ 1_Sa.mp3
+    â”œâ”€â”€ 2_Re.mp3
+    â”œâ”€â”€ 3_Ga.mp3
+    â”œâ”€â”€ 4_Ma.mp3
+    â”œâ”€â”€ 5_Pa.mp3
+    â”œâ”€â”€ 6_Dha.mp3
+    â”œâ”€â”€ 7_Ni.mp3
+    â””â”€â”€ 8_Sa_upper.mp3
 ```
 
 ### Get your sounds
@@ -99,7 +102,7 @@ The file names start with the finger count they belong to (`1_Sa.mp3` for 1 fing
 
 MediaPipe finds **21 numbered points** on every hand. Memorise this layout, because your finger-counting logic is built on it.
 
-| Part | Landmark indices | Names (base → tip) |
+| Part | Landmark indices | Names (base â†’ tip) |
 |---|---|---|
 | Wrist | 0 | |
 | Thumb | 1, 2, 3, **4** | CMC, MCP, IP, **TIP** |
@@ -146,7 +149,7 @@ Build in small milestones and **test after each one**. Do not write everything a
 
 **Goal:** Build a `HandLandmarker` **once, before the loop**.
 
-The pattern is three lines: *where is the model → how should it run → build it.*
+The pattern is three lines: *where is the model â†’ how should it run â†’ build it.*
 
 ```python
 base_options = mp_python.BaseOptions(model_asset_path=MODEL_PATH)
@@ -389,9 +392,13 @@ Finished early? Try one of these:
 
 ## 8. References
 
-- Week 4 Notes: `Week4_Notes_CV.pdf` (HandLandmarker setup, detection, drawing, cheat-sheet)
+- Week 4 Notes: `CV_Week4_Notes.pdf` (HandLandmarker setup, detection, drawing, cheat-sheet)
 - [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
 - [OpenCV Python docs](https://docs.opencv.org/)
 - [Pygame mixer docs](https://www.pygame.org/docs/ref/mixer.html)
 
 **#GO ERC!!!!!**
+
+## Completed implementation assets
+
+The included `hand_landmarker.task` is the version 1 float16 Hand Landmarker model bundle from Google MediaPipe: [official model download](https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task). The original assignment notes and swara recordings are from [the course repository](https://github.com/arkadasgupta07/ERC-26_CV_Week4).

@@ -1,0 +1,5 @@
+*.py text eol=lf
+*.md text eol=lf
+*.pdf binary
+*.mp3 binary
+*.task binary
